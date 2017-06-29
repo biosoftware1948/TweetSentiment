@@ -1,5 +1,6 @@
 import tweepy
 import sys
+import re
 
 
 class Twitter_Scraper(object):
@@ -26,14 +27,22 @@ class Twitter_Scraper(object):
 			stream = tweepy.Stream(self.authorization, self.scraperListener)
 			stream.filter(track=tracker, languages=["en"])
 		except KeyboardInterrupt:
-			sys.stdout.write("\n\nGoodnight Sweet Prince")
+			sys.stdout.write("\n\nGoodnight Sweet Prince\n")
 			sys.exit()
 
 
 
 class MyStreamListener(tweepy.StreamListener):
     def on_status(self, status):
-        print(status)
+        # print(status.author.location)
+        states = ['IA', 'KS', 'UT', 'VA', 'NC', 'NE', 'SD', 'AL', 'ID', 'FM', 'DE', 'AK', 'CT', 'PR', 'NM', 'MS', 'PW', 'CO', 'NJ', 'FL', 'MN', 'VI', 'NV', 'AZ', 'WI', 'ND', 'PA', 'OK', 'KY', 'RI', 'NH', 'MO', 'ME', 'VT', 'GA', 'GU', 'AS', 'NY', 'CA', 'HI', 'IL', 'TN', 'MA', 'OH', 'MD', 'MI', 'WY', 'WA', 'OR', 'MH', 'SC', 'IN', 'LA', 'MP', 'DC', 'MT', 'AR', 'WV', 'TX']
+        statesFull = ['Alabama','Alaska','American Samoa','Arizona','Arkansas','California','Colorado','Connecticut','Delaware','District of Columbia','Federated States of Micronesia','Florida','Georgia','Guam','Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky','Louisiana','Maine','Marshall Islands','Maryland','Massachusetts','Michigan','Minnesota','Mississippi','Missouri','Montana','Nebraska','Nevada','New Hampshire','New Jersey','New Mexico','New York','North Carolina','North Dakota','Northern Mariana Islands','Ohio','Oklahoma','Oregon','Palau','Pennsylvania','Puerto Rico','Rhode Island','South Carolina','South Dakota','Tennessee','Texas','Utah','Vermont','Virgin Island','Virginia','Washington','West Virginia','Wisconsin','Wyoming']
+        regex = re.compile(r'\b(' + '|'.join(states + statesFull) + r')\b')
+        if not status.author.location is None:
+            # print(status.author.location)
+            st = regex.search(status.author.location)
+            if st:
+                print(st.group(0))
 
 
 
@@ -46,7 +55,7 @@ def main():
             content = [x.strip() for x in content]
         Spider = Twitter_Scraper(content[0], content[1], content[2], content[3])
         Spider.connect()
-        Spider.stream_tweets(['Spicer'])
+        Spider.stream_tweets(['Trump'])
     except:
         sys.exit(1)
 
